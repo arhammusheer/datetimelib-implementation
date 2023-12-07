@@ -1,0 +1,9 @@
+{
+  "files.associations": {
+    "at_cmd_custom.h": "c",
+    "at_cmd_parser.h": "c",
+    "lte_lc.h": "c",
+    "date_time.h": "c",
+    "devicetree.h": "c"
+  }
+}
