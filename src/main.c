@@ -77,9 +77,11 @@ void print_modem_info(enum modem_info info)
     }
 }
 
-void main(void)
+int main(void)
 {
     int err, ret;
+
+    
 
     printk("Initializing modem\n");
 
@@ -87,23 +89,32 @@ void main(void)
     if (err)
     {
         printk("Modem initialization failed, err %d\n", err);
-        return 0;
+        return err;
     }
 
     printk("Waiting for network\n");
 
     err = lte_lc_init();
     if (err)
+    {
         printk("MODEM: Failed initializing LTE Link controller, error: %d\n", err);
+        return err;
+    }
 
     err = lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_UICC);
     if (err)
+    {
         printk("MODEM: Failed enabling UICC power, error: %d\n", err);
+        return err;
+    }
     k_msleep(100);
 
     err = modem_info_init();
     if (err)
+    {
         printk("MODEM: Failed initializing modem info module, error: %d\n", err);
+        return err;
+    }
 
     print_modem_info(MODEM_INFO_FW_VERSION);
     print_modem_info(MODEM_INFO_IMEI);
@@ -114,7 +125,7 @@ void main(void)
     if (err)
     {
         printk("Failed to connect to the LTE network, err %d\n", err);
-        return;
+        return err;
     }
 
     printk("OK\n");
@@ -128,13 +139,13 @@ void main(void)
     ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_LOW);
     if (ret < 0)
     {
-        return;
+        return ret;
     }
 
     ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
     if (ret < 0)
     {
-        return;
+        return ret;
     }
 
     ret = gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_TO_ACTIVE);
@@ -143,16 +154,16 @@ void main(void)
 
     printk("Ready\n");
 
-   // Print time every 10 seconds
+    // Print time every 10 seconds
     // while (1)
     // {
     //     k_msleep(9990);
-        
+
     //     // Turn on LED
     //     gpio_pin_set_dt(&led, 1);
     //     k_msleep(10);
 
-    //     // Print Time   
+    //     // Print Time
     //     int err = date_time_now(&t);
     //     if (err)
     //     {
@@ -163,6 +174,7 @@ void main(void)
     //     // Turn off LED
     //     gpio_pin_set_dt(&led, 0);
 
-
     // }
+
+    return 0;
 }
